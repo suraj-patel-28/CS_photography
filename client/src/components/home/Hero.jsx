@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
-import { HiArrowRight, HiPlay, HiX } from "react-icons/hi";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/blur.css";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { HiArrowRight, HiPlay, HiX } from 'react-icons/hi';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 const Hero = () => {
   const [showVideoModal, setShowVideoModal] = useState(false);
-
+  
   // Auto-close after video duration (adjust this to match your video length in milliseconds)
   useEffect(() => {
     if (showVideoModal) {
@@ -15,15 +15,15 @@ const Hero = () => {
       const timer = setTimeout(() => {
         setShowVideoModal(false);
       }, 30000); // Adjust this to your video length
-
+      
       return () => clearTimeout(timer);
     }
   }, [showVideoModal]);
-
+  
   const heroImages = [
-    "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1920&q=80",
-    "https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=80",
-    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1920&q=80",
+    'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1920&q=80',
+    'https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=80',
+    'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1920&q=80',
   ];
 
   return (
@@ -85,7 +85,7 @@ const Hero = () => {
             transition={{ delay: 0.7 }}
             className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto"
           >
-            Transform your special moments into timeless memories with our
+            Transform your special moments into timeless memories with our 
             professional photography and videography services
           </motion.p>
 
@@ -103,7 +103,7 @@ const Hero = () => {
               View Our Work
               <HiArrowRight className="group-hover:translate-x-1 transition-transform" />
             </Link>
-            <button
+            <button 
               onClick={() => setShowVideoModal(true)}
               className="group bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-8 py-4 rounded-full font-medium transition-all flex items-center gap-2"
             >
@@ -120,9 +120,9 @@ const Hero = () => {
             className="grid grid-cols-3 gap-8 md:gap-16 max-w-2xl mx-auto mt-16"
           >
             {[
-              { number: "500+", label: "Happy Clients" },
-              { number: "1000+", label: "Photos Taken" },
-              { number: "10+", label: "Years Experience" },
+              { number: '500+', label: 'Happy Clients' },
+              { number: '1000+', label: 'Photos Taken' },
+              { number: '10+', label: 'Years Experience' },
             ].map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-primary-400">
@@ -142,7 +142,8 @@ const Hero = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        ></motion.div>
+        >
+        </motion.div>
       </div>
 
       {/* Video Modal - Instagram Reel Style */}
@@ -152,9 +153,84 @@ const Hero = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
             onClick={() => setShowVideoModal(false)}
           >
+            {/* Animated Background */}
+            <div className="absolute inset-0 overflow-hidden">
+              {/* Base dark layer */}
+              <div className="absolute inset-0 bg-black/80" />
+              
+              {/* Animated gradient orbs */}
+              <motion.div
+                animate={{
+                  x: [0, 100, 0],
+                  y: [0, -100, 0],
+                }}
+                transition={{
+                  duration: 20,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+                className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full blur-3xl opacity-30"
+              />
+              <motion.div
+                animate={{
+                  x: [0, -100, 0],
+                  y: [0, 100, 0],
+                }}
+                transition={{
+                  duration: 15,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+                className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary-500 rounded-full blur-3xl opacity-30"
+              />
+              <motion.div
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [0.3, 0.5, 0.3],
+                }}
+                transition={{
+                  duration: 10,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur-3xl opacity-20"
+              />
+              
+              {/* Particle effect */}
+              <div className="absolute inset-0">
+                {[...Array(20)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-white rounded-full"
+                    initial={{
+                      x: Math.random() * window.innerWidth,
+                      y: window.innerHeight + 10,
+                    }}
+                    animate={{
+                      y: -10,
+                      x: Math.random() * window.innerWidth,
+                    }}
+                    transition={{
+                      duration: Math.random() * 10 + 10,
+                      repeat: Infinity,
+                      delay: Math.random() * 5,
+                      ease: "linear",
+                    }}
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      opacity: Math.random() * 0.5 + 0.5,
+                    }}
+                  />
+                ))}
+              </div>
+              
+              {/* Radial gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-radial from-transparent via-black/50 to-black/90" />
+            </div>
+
             <motion.div
               initial={{ scale: 0.8, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -172,17 +248,11 @@ const Hero = () => {
               </button>
 
               {/* Phone Frame Container - Smaller Size */}
-              <div
-                className="relative mx-auto"
-                style={{ width: "280px", maxWidth: "85vw" }}
-              >
+              <div className="relative mx-auto" style={{ width: '280px', maxWidth: '85vw' }}>
                 {/* Phone Frame */}
                 <div className="relative bg-black rounded-[2rem] p-1.5 shadow-2xl">
                   {/* Phone Screen */}
-                  <div
-                    className="relative bg-black rounded-[1.75rem] overflow-hidden"
-                    style={{ aspectRatio: "9/16", maxHeight: "70vh" }}
-                  >
+                  <div className="relative bg-black rounded-[1.75rem] overflow-hidden" style={{ aspectRatio: '9/16', maxHeight: '70vh' }}>
                     {/* Video */}
                     <iframe
                       src="https://www.youtube.com/embed/KOlET7hUBjU?autoplay=1&controls=0&modestbranding=1&loop=1&playlist=KOlET7hUBjU"
@@ -190,7 +260,7 @@ const Hero = () => {
                       className="absolute inset-0 w-full h-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
-                      style={{ border: "none" }}
+                      style={{ border: 'none' }}
                       onEnded={() => setShowVideoModal(false)}
                     />
 
@@ -198,7 +268,7 @@ const Hero = () => {
                     <div className="absolute inset-0 pointer-events-none">
                       {/* Top gradient */}
                       <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/30 to-transparent" />
-
+                      
                       {/* Bottom gradient */}
                       <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-black/60 to-transparent" />
 
@@ -208,43 +278,27 @@ const Hero = () => {
                           <div className="flex-1">
                             <div className="flex items-center gap-1.5 mb-1">
                               <div className="w-6 h-6 bg-gradient-to-r from-primary-400 to-purple-400 rounded-full"></div>
-                              <span className="font-medium text-xs">
-                                csphotography
-                              </span>
-                              <button className="text-xs border border-white/50 px-1.5 py-0.5 rounded text-[10px]">
-                                Follow
-                              </button>
+                              <span className="font-medium text-xs">csphotography</span>
+                              <button className="text-xs border border-white/50 px-1.5 py-0.5 rounded text-[10px]">Follow</button>
                             </div>
-                            <p className="text-xs mb-1 line-clamp-2">
-                              Professional Photography ✨📸
-                            </p>
-                            <p className="text-[10px] opacity-80">
-                              🎵 Original Audio
-                            </p>
+                            <p className="text-xs mb-1 line-clamp-2">Professional Photography ✨📸</p>
+                            <p className="text-[10px] opacity-80">🎵 Original Audio</p>
                           </div>
-
+                          
                           {/* Action buttons */}
                           <div className="flex flex-col gap-3 items-center">
                             <div className="text-center">
                               <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-0.5">
-                                <svg
-                                  className="w-5 h-5"
-                                  fill="white"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
+                                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                                 </svg>
                               </div>
                               <span className="text-[10px]">24.5K</span>
                             </div>
                             <div className="text-center">
                               <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-0.5">
-                                <svg
-                                  className="w-5 h-5"
-                                  fill="white"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z" />
+                                <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
+                                  <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
                                 </svg>
                               </div>
                               <span className="text-[10px]">Share</span>

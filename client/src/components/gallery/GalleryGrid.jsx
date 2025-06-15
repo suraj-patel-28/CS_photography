@@ -1,102 +1,60 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import {
-  HiPlay,
-  HiPhotograph,
-  HiX,
-  HiChevronLeft,
-  HiChevronRight,
-} from "react-icons/hi";
-import MediaModal from "./MediaModal";
-import "react-lazy-load-image-component/src/effects/blur.css";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { HiPlay, HiPhotograph } from 'react-icons/hi';
+import MediaModal from './MediaModal';
+import axios from 'axios';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 const GalleryGrid = ({ filter }) => {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [mediaItems, setMediaItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample media data - replace with API call
-  const mediaItems = [
+  useEffect(() => {
+    fetchMedia();
+  }, []);
+
+  const fetchMedia = async () => {
+    try {
+      const response = await axios.get('/api/media');
+      setMediaItems(response.data.data);
+    } catch (error) {
+      console.error('Error fetching media:', error);
+      // Fallback to demo data if API fails
+      setMediaItems(getDemoData());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getDemoData = () => [
     {
       id: 1,
-      type: "photo",
-      category: "wedding",
-      thumbnail:
-        "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80",
-      full: "https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=80",
-      title: "Beautiful Wedding Ceremony",
+      type: 'photo',
+      category: 'wedding',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=80',
+      title: 'Beautiful Wedding Ceremony',
     },
     {
       id: 2,
-      type: "photo",
-      category: "portrait",
-      thumbnail:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80",
-      full: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1920&q=80",
-      title: "Professional Portrait",
-    },
-    {
-      id: 3,
-      type: "video",
-      category: "wedding",
-      thumbnail:
-        "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-      title: "Wedding Highlights",
-    },
-    {
-      id: 4,
-      type: "photo",
-      category: "event",
-      thumbnail:
-        "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&q=80",
-      full: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=1920&q=80",
-      title: "Corporate Event",
-    },
-    {
-      id: 5,
-      type: "photo",
-      category: "nature",
-      thumbnail:
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
-      full: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80",
-      title: "Mountain Landscape",
-    },
-    {
-      id: 6,
-      type: "photo",
-      category: "portrait",
-      thumbnail:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&q=80",
-      full: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=1920&q=80",
-      title: "Creative Portrait",
-    },
-    {
-      id: 7,
-      type: "video",
-      category: "event",
-      thumbnail:
-        "https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-      title: "Event Highlights",
-    },
-    {
-      id: 8,
-      type: "photo",
-      category: "wedding",
-      thumbnail:
-        "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80",
-      full: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1920&q=80",
-      title: "Wedding Couple",
+      type: 'photo',
+      category: 'portrait',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1920&q=80',
+      title: 'Professional Portrait',
     },
   ];
 
-  const filteredMedia =
-    filter === "all"
-      ? mediaItems
-      : mediaItems.filter(
-          (item) => item.category === filter || item.type === filter
-        );
+  const filteredMedia = filter === 'all' 
+    ? mediaItems 
+    : mediaItems.filter(item => 
+        item.category === filter || 
+        (filter === 'video' && item.type === 'video') ||
+        (filter === 'photo' && item.type === 'photo')
+      );
 
   const openModal = (media) => {
     setSelectedMedia(media);
@@ -109,21 +67,27 @@ const GalleryGrid = ({ filter }) => {
   };
 
   const navigateMedia = (direction) => {
-    const currentIndex = filteredMedia.findIndex(
-      (item) => item.id === selectedMedia.id
-    );
+    const currentIndex = filteredMedia.findIndex(item => item.id === selectedMedia.id);
     let newIndex;
-
-    if (direction === "next") {
-      newIndex =
-        currentIndex === filteredMedia.length - 1 ? 0 : currentIndex + 1;
+    
+    if (direction === 'next') {
+      newIndex = currentIndex === filteredMedia.length - 1 ? 0 : currentIndex + 1;
     } else {
-      newIndex =
-        currentIndex === 0 ? filteredMedia.length - 1 : currentIndex - 1;
+      newIndex = currentIndex === 0 ? filteredMedia.length - 1 : currentIndex - 1;
     }
-
+    
     setSelectedMedia(filteredMedia[newIndex]);
   };
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="aspect-square bg-dark-200 rounded-lg animate-pulse" />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <>
@@ -141,31 +105,29 @@ const GalleryGrid = ({ filter }) => {
               onClick={() => openModal(item)}
             >
               <LazyLoadImage
-                src={item.thumbnail}
+                src={item.thumbnailUrl}
                 alt={item.title}
                 effect="blur"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
-
+              
               {/* Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute bottom-0 left-0 right-0 p-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-white font-medium">{item.title}</h3>
-                    {item.type === "video" ? (
+                    {item.type === 'video' ? (
                       <HiPlay className="text-white text-2xl" />
                     ) : (
                       <HiPhotograph className="text-white text-2xl" />
                     )}
                   </div>
-                  <p className="text-gray-300 text-sm mt-1 capitalize">
-                    {item.category}
-                  </p>
+                  <p className="text-gray-300 text-sm mt-1 capitalize">{item.category}</p>
                 </div>
               </div>
 
               {/* Type Badge */}
-              {item.type === "video" && (
+              {item.type === 'video' && (
                 <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm p-2 rounded-full">
                   <HiPlay className="text-white" />
                 </div>
@@ -175,8 +137,15 @@ const GalleryGrid = ({ filter }) => {
         </AnimatePresence>
       </div>
 
+      {filteredMedia.length === 0 && (
+        <div className="text-center py-12">
+          <HiPhotograph className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+          <p className="text-gray-400">No items in this category yet.</p>
+        </div>
+      )}
+
       {/* Media Modal */}
-      <MediaModal
+      <MediaModal 
         isOpen={modalOpen}
         onClose={closeModal}
         media={selectedMedia}

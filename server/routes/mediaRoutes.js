@@ -1,29 +1,22 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
+const { upload } = require('../config/cloudinary');
+const { protect } = require('../middleware/auth');
+const {
+  getAllMedia,
+  uploadMedia,
+  updateMedia,
+  deleteMedia,
+  bulkUploadMedia
+} = require('../controllers/mediaController');
 
-// Placeholder routes for media
-// You can implement these later when needed
+// Public routes
+router.get('/', getAllMedia);
 
-router.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Media routes will be implemented when needed",
-    data: [],
-  });
-});
-
-router.post("/", (req, res) => {
-  res.status(501).json({
-    success: false,
-    message: "Media upload not implemented yet",
-  });
-});
-
-router.delete("/:id", (req, res) => {
-  res.status(501).json({
-    success: false,
-    message: "Media deletion not implemented yet",
-  });
-});
+// Protected routes (require authentication)
+router.post('/', protect, upload.single('image'), uploadMedia);
+router.post('/bulk', protect, upload.array('images', 20), bulkUploadMedia);
+router.put('/:id', protect, updateMedia);
+router.delete('/:id', protect, deleteMedia);
 
 module.exports = router;

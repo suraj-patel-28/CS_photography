@@ -17,10 +17,11 @@ const Testimonials = () => {
   const testimonials = [
     {
       id: 1,
-      name: "Sarah Johnson",
-      role: "Bride",
+      name: "Suraj",
+      role: "Groom",
       image:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
+        
       content:
         "The team captured our wedding day perfectly! Every photo tells a story, and we couldn't be happier with the results. Their attention to detail and creativity exceeded our expectations.",
       rating: 5,
@@ -28,10 +29,10 @@ const Testimonials = () => {
     },
     {
       id: 2,
-      name: "Michael Chen",
-      role: "CEO, TechStart",
+      name: "Kiran",
+      role: "HR",
       image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
       content:
         "Professional, creative, and efficient. They made our corporate event photography seamless and delivered stunning results that we've used across all our marketing materials.",
       rating: 5,
@@ -39,7 +40,7 @@ const Testimonials = () => {
     },
     {
       id: 3,
-      name: "Emily Rodriguez",
+      name: "Navnit",
       role: "Model",
       image:
         "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
@@ -50,7 +51,7 @@ const Testimonials = () => {
     },
     {
       id: 4,
-      name: "David & Lisa Thompson",
+      name: "GSM",
       role: "Anniversary Couple",
       image:
         "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&q=80",

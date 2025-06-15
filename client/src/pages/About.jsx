@@ -38,21 +38,21 @@ const About = () => {
 
   const team = [
     {
-      name: "John Smith",
+      name: "Ajay",
       role: "Lead Photographer",
       image:
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80",
       bio: "15+ years capturing moments",
     },
     {
-      name: "Sarah Johnson",
+      name: "Raj",
       role: "Creative Director",
       image:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80",
       bio: "Visionary behind our aesthetic",
     },
     {
-      name: "Mike Chen",
+      name: "Hari",
       role: "Videographer",
       image:
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
