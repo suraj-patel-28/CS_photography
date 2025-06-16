@@ -56,16 +56,14 @@ exports.uploadMedia = async (req, res) => {
     // Create thumbnail URL
     let thumbnailUrl;
     if (isVideo) {
-      // For videos, use Cloudinary's video thumbnail generation
-      thumbnailUrl = req.file.path.replace(
-        "/upload/",
-        "/upload/so_0,w_400,h_400,c_fill/"
-      );
+      // For videos, generate frame at 1 second with transformation
+      const videoId = req.file.public_id || req.file.filename;
+      thumbnailUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload/so_1.0,w_400,h_400,c_fill,q_auto/${videoId}.jpg`;
     } else {
       // For images, use standard transformation
       thumbnailUrl = req.file.path.replace(
         "/upload/",
-        "/upload/c_fill,h_400,w_400/"
+        "/upload/c_fill,h_400,w_400,q_auto/"
       );
     }
 
@@ -108,7 +106,8 @@ exports.uploadMedia = async (req, res) => {
 // @access  Private/Admin
 exports.updateMedia = async (req, res) => {
   try {
-    const { title, category, description, featured, order } = req.body;
+    const { title, category, description, featured, order, thumbnailUrl } =
+      req.body;
 
     const media = await Media.findByPk(req.params.id);
 
@@ -125,6 +124,7 @@ exports.updateMedia = async (req, res) => {
       description: description !== undefined ? description : media.description,
       featured: featured !== undefined ? featured === "true" : media.featured,
       order: order !== undefined ? parseInt(order) : media.order,
+      thumbnailUrl: thumbnailUrl || media.thumbnailUrl,
     });
 
     res.json({

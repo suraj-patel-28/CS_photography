@@ -3,12 +3,12 @@ import { motion } from "framer-motion";
 
 const GalleryFilter = ({ activeFilter, onFilterChange }) => {
   const filters = [
-    { id: "all", label: "All Work" },
+    { id: "all", label: "All" },
     { id: "wedding", label: "Weddings" },
     { id: "portrait", label: "Portraits" },
     { id: "event", label: "Events" },
     { id: "nature", label: "Nature" },
-    { id: "video", label: "Videos" },
+    { id: "other", label: "Others" },
   ];
 
   return (
