@@ -1,36 +1,36 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { toast } from "react-toastify";
-import axios from "axios";
-import {
-  HiPhotograph,
-  HiUpload,
-  HiTrash,
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { 
+  HiPhotograph, 
+  HiUpload, 
+  HiTrash, 
   HiPencilAlt,
   HiX,
   HiCheck,
   HiLogout,
   HiVideoCamera,
-  HiPlay,
-} from "react-icons/hi";
+  HiPlay
+} from 'react-icons/hi';
 
 const Dashboard = () => {
   const [media, setMedia] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [uploadType, setUploadType] = useState("image"); // 'image' or 'video'
+  const [uploadType, setUploadType] = useState('image'); // 'image' or 'video'
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
 
   const categories = [
-    { value: "all", label: "All" },
-    { value: "wedding", label: "Wedding" },
-    { value: "portrait", label: "Portrait" },
-    { value: "event", label: "Event" },
-    { value: "nature", label: "Nature" },
-    { value: "other", label: "Other" },
+    { value: 'all', label: 'All' },
+    { value: 'wedding', label: 'Wedding' },
+    { value: 'portrait', label: 'Portrait' },
+    { value: 'event', label: 'Event' },
+    { value: 'nature', label: 'Nature' },
+    { value: 'other', label: 'Other' }
   ];
 
   useEffect(() => {
@@ -39,13 +39,13 @@ const Dashboard = () => {
 
   const fetchMedia = async () => {
     try {
-      const token = localStorage.getItem("adminToken");
-      const response = await axios.get("/api/media", {
-        headers: { Authorization: `Bearer ${token}` },
+      const token = localStorage.getItem('adminToken');
+      const response = await axios.get('/api/media', {
+        headers: { Authorization: `Bearer ${token}` }
       });
       setMedia(response.data.data);
     } catch (error) {
-      toast.error("Failed to fetch media");
+      toast.error('Failed to fetch media');
     } finally {
       setLoading(false);
     }
@@ -58,16 +58,16 @@ const Dashboard = () => {
 
   const handleUpload = async () => {
     if (selectedFiles.length === 0) {
-      toast.error("Please select files to upload");
+      toast.error('Please select files to upload');
       return;
     }
 
     setUploading(true);
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem('adminToken');
 
     try {
-      if (uploadType === "video" && selectedFiles.length > 1) {
-        toast.error("Please upload videos one at a time");
+      if (uploadType === 'video' && selectedFiles.length > 1) {
+        toast.error('Please upload videos one at a time');
         setUploading(false);
         return;
       }
@@ -76,55 +76,49 @@ const Dashboard = () => {
         // Single file upload
         const formData = new FormData();
         const file = selectedFiles[0];
-
-        formData.append(uploadType === "video" ? "video" : "image", file);
-        formData.append("title", file.name.split(".")[0]);
-        formData.append(
-          "category",
-          selectedCategory === "all" ? "other" : selectedCategory
-        );
+        
+        formData.append(uploadType === 'video' ? 'video' : 'image', file);
+        formData.append('title', file.name.split('.')[0]);
+        formData.append('category', selectedCategory === 'all' ? 'other' : selectedCategory);
 
         await axios.post(`/api/media/${uploadType}`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
+            'Content-Type': 'multipart/form-data'
+          }
         });
       } else {
         // Bulk upload (only for images)
         const formData = new FormData();
-        selectedFiles.forEach((file) => {
-          formData.append("images", file);
+        selectedFiles.forEach(file => {
+          formData.append('images', file);
         });
-        formData.append(
-          "category",
-          selectedCategory === "all" ? "other" : selectedCategory
-        );
+        formData.append('category', selectedCategory === 'all' ? 'other' : selectedCategory);
 
-        await axios.post("/api/media/bulk", formData, {
+        await axios.post('/api/media/bulk', formData, {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
+            'Content-Type': 'multipart/form-data'
+          }
         });
       }
 
-      toast.success("Upload successful!");
+      toast.success('Upload successful!');
       setSelectedFiles([]);
       fetchMedia();
-
+      
       // Clear file input
-      const fileInput = document.getElementById("file-upload");
-      if (fileInput) fileInput.value = "";
+      const fileInput = document.getElementById('file-upload');
+      if (fileInput) fileInput.value = '';
     } catch (error) {
-      console.error("Upload error:", error);
+      console.error('Upload error:', error);
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else if (error.response?.status === 413) {
-        const limit = uploadType === "video" ? "50MB" : "10MB";
+        const limit = uploadType === 'video' ? '50MB' : '10MB';
         toast.error(`File too large! Maximum size is ${limit}`);
       } else {
-        toast.error("Upload failed. Please try again.");
+        toast.error('Upload failed. Please try again.');
       }
     } finally {
       setUploading(false);
@@ -132,20 +126,20 @@ const Dashboard = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this item?")) {
+    if (!window.confirm('Are you sure you want to delete this item?')) {
       return;
     }
 
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = localStorage.getItem('adminToken');
       await axios.delete(`/api/media/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
-
-      toast.success("Deleted successfully");
-      setMedia(media.filter((item) => item.id !== id));
+      
+      toast.success('Deleted successfully');
+      setMedia(media.filter(item => item.id !== id));
     } catch (error) {
-      toast.error("Failed to delete");
+      toast.error('Failed to delete');
     }
   };
 
@@ -154,61 +148,68 @@ const Dashboard = () => {
     setEditForm({
       title: item.title,
       category: item.category,
-      description: item.description || "",
-      featured: item.featured,
+      description: item.description || '',
+      featured: item.featured
     });
   };
 
   const handleUpdate = async (id) => {
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = localStorage.getItem('adminToken');
       await axios.put(`/api/media/${id}`, editForm, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
-
-      toast.success("Updated successfully");
+      
+      toast.success('Updated successfully');
       setEditingId(null);
       fetchMedia();
     } catch (error) {
-      toast.error("Failed to update");
+      toast.error('Failed to update');
     }
   };
 
   const handleThumbnailTime = async (id, time) => {
     try {
-      const token = localStorage.getItem("adminToken");
-      const item = media.find((m) => m.id === id);
-
-      if (item && item.type === "video") {
+      const token = localStorage.getItem('adminToken');
+      const item = media.find(m => m.id === id);
+      
+      if (item && item.type === 'video') {
+        // Extract cloud name from the current image URL
+        const urlParts = item.imageUrl.split('/');
+        const cloudName = urlParts[urlParts.indexOf('res.cloudinary.com') + 1];
+        
         // Update thumbnail URL with new timestamp
         const videoId = item.cloudinaryId;
-        const newThumbnailUrl = `https://res.cloudinary.com/${
-          process.env.CLOUDINARY_CLOUD_NAME || "your-cloud-name"
-        }/video/upload/so_${time},w_400,h_400,c_fill,q_auto/${videoId}.jpg`;
-
-        await axios.put(
-          `/api/media/${id}`,
-          { thumbnailUrl: newThumbnailUrl },
-          { headers: { Authorization: `Bearer ${token}` } }
+        const newThumbnailUrl = `https://res.cloudinary.com/${cloudName}/video/upload/so_${time},w_400,h_400,c_fill,q_auto/${videoId}.jpg`;
+        
+        await axios.put(`/api/media/${id}`, 
+          { thumbnailUrl: newThumbnailUrl }, 
+          { headers: { Authorization: `Bearer ${token}` }}
         );
-
-        toast.success("Thumbnail updated");
-        fetchMedia();
+        
+        // Update local state immediately for instant feedback
+        setMedia(prevMedia => 
+          prevMedia.map(m => 
+            m.id === id ? { ...m, thumbnailUrl: newThumbnailUrl } : m
+          )
+        );
+        
+        toast.success(`Thumbnail updated to ${time}s`);
       }
     } catch (error) {
-      toast.error("Failed to update thumbnail");
+      toast.error('Failed to update thumbnail');
+      console.error('Thumbnail update error:', error);
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-    window.location.href = "/admin";
+    localStorage.removeItem('adminToken');
+    window.location.href = '/admin';
   };
 
-  const filteredMedia =
-    selectedCategory === "all"
-      ? media
-      : media.filter((item) => item.category === selectedCategory);
+  const filteredMedia = selectedCategory === 'all' 
+    ? media 
+    : media.filter(item => item.category === selectedCategory);
 
   if (loading) {
     return (
@@ -238,7 +239,7 @@ const Dashboard = () => {
         {/* Upload Section */}
         <div className="bg-dark-200 rounded-xl p-6 mb-8">
           <h2 className="text-xl font-medium text-white mb-4">Upload Media</h2>
-
+          
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
             {/* Upload Type Toggle */}
             <div>
@@ -247,22 +248,22 @@ const Dashboard = () => {
               </label>
               <div className="flex gap-2">
                 <button
-                  onClick={() => setUploadType("image")}
+                  onClick={() => setUploadType('image')}
                   className={`flex-1 px-3 py-2 rounded-lg flex items-center justify-center gap-2 ${
-                    uploadType === "image"
-                      ? "bg-primary-600 text-white"
-                      : "bg-dark-300 text-gray-400"
+                    uploadType === 'image' 
+                      ? 'bg-primary-600 text-white' 
+                      : 'bg-dark-300 text-gray-400'
                   }`}
                 >
                   <HiPhotograph />
                   Image
                 </button>
                 <button
-                  onClick={() => setUploadType("video")}
+                  onClick={() => setUploadType('video')}
                   className={`flex-1 px-3 py-2 rounded-lg flex items-center justify-center gap-2 ${
-                    uploadType === "video"
-                      ? "bg-primary-600 text-white"
-                      : "bg-dark-300 text-gray-400"
+                    uploadType === 'video' 
+                      ? 'bg-primary-600 text-white' 
+                      : 'bg-dark-300 text-gray-400'
                   }`}
                 >
                   <HiVideoCamera />
@@ -281,26 +282,24 @@ const Dashboard = () => {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="w-full bg-dark-300 border border-gray-600 rounded-lg px-4 py-2 text-white"
               >
-                {categories
-                  .filter((cat) => cat.value !== "all")
-                  .map((cat) => (
-                    <option key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </option>
-                  ))}
+                {categories.filter(cat => cat.value !== 'all').map(cat => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
+                ))}
               </select>
             </div>
 
             {/* File Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Select {uploadType === "video" ? "Video" : "Images"}
+                Select {uploadType === 'video' ? 'Video' : 'Images'}
               </label>
               <input
                 id="file-upload"
                 type="file"
-                multiple={uploadType !== "video"}
-                accept={uploadType === "video" ? "video/*" : "image/*"}
+                multiple={uploadType !== 'video'}
+                accept={uploadType === 'video' ? 'video/*' : 'image/*'}
                 onChange={handleFileSelect}
                 className="w-full bg-dark-300 border border-gray-600 rounded-lg px-4 py-2 text-white"
               />
@@ -321,8 +320,7 @@ const Dashboard = () => {
                 ) : (
                   <>
                     <HiUpload />
-                    Upload{" "}
-                    {selectedFiles.length > 0 && `(${selectedFiles.length})`}
+                    Upload {selectedFiles.length > 0 && `(${selectedFiles.length})`}
                   </>
                 )}
               </button>
@@ -331,10 +329,9 @@ const Dashboard = () => {
 
           {selectedFiles.length > 0 && (
             <div className="text-sm text-gray-400">
-              Selected: {selectedFiles.map((f) => f.name).join(", ")}
+              Selected: {selectedFiles.map(f => f.name).join(', ')}
               <div className="text-xs text-gray-500 mt-1">
-                Max size:{" "}
-                {uploadType === "video" ? "50MB per video" : "10MB per image"}
+                Max size: {uploadType === 'video' ? '50MB per video' : '10MB per image'}
               </div>
             </div>
           )}
@@ -342,21 +339,17 @@ const Dashboard = () => {
 
         {/* Filter Tabs */}
         <div className="flex flex-wrap gap-2 mb-6">
-          {categories.map((cat) => (
+          {categories.map(cat => (
             <button
               key={cat.value}
               onClick={() => setSelectedCategory(cat.value)}
               className={`px-4 py-2 rounded-full font-medium transition-all ${
                 selectedCategory === cat.value
-                  ? "bg-primary-600 text-white"
-                  : "bg-dark-200 text-gray-400 hover:text-white"
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-dark-200 text-gray-400 hover:text-white'
               }`}
             >
-              {cat.label} (
-              {cat.value === "all"
-                ? media.length
-                : media.filter((m) => m.category === cat.value).length}
-              )
+              {cat.label} ({cat.value === 'all' ? media.length : media.filter(m => m.category === cat.value).length})
             </button>
           ))}
         </div>
@@ -375,15 +368,15 @@ const Dashboard = () => {
                   alt={item.title}
                   className="w-full h-full object-cover"
                 />
-
+                
                 {/* Type Badge */}
-                {item.type === "video" && (
+                {item.type === 'video' && (
                   <div className="absolute top-2 left-2 bg-black/70 px-2 py-1 rounded-lg flex items-center gap-1">
                     <HiPlay className="text-white text-sm" />
                     <span className="text-white text-xs">Video</span>
                   </div>
                 )}
-
+                
                 {/* Overlay Actions */}
                 <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   <button
@@ -407,48 +400,42 @@ const Dashboard = () => {
                   <input
                     type="text"
                     value={editForm.title}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, title: e.target.value })
-                    }
+                    onChange={(e) => setEditForm({...editForm, title: e.target.value})}
                     className="w-full bg-dark-300 border border-gray-600 rounded px-2 py-1 text-white text-sm"
                     placeholder="Title"
                   />
                   <select
                     value={editForm.category}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, category: e.target.value })
-                    }
+                    onChange={(e) => setEditForm({...editForm, category: e.target.value})}
                     className="w-full bg-dark-300 border border-gray-600 rounded px-2 py-1 text-white text-sm"
                   >
-                    {categories
-                      .filter((cat) => cat.value !== "all")
-                      .map((cat) => (
-                        <option key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </option>
-                      ))}
+                    {categories.filter(cat => cat.value !== 'all').map(cat => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
                   </select>
-
+                  
                   {/* Video Thumbnail Selector */}
-                  {item.type === "video" && (
+                  {item.type === 'video' && (
                     <div className="space-y-1">
-                      <label className="text-xs text-gray-400">
-                        Thumbnail Time (seconds)
-                      </label>
+                      <label className="text-xs text-gray-400">Thumbnail Time (seconds)</label>
                       <div className="flex gap-1">
-                        {[0, 1, 2, 3, 5].map((time) => (
+                        {[0, 1, 2, 3, 5, 10].map(time => (
                           <button
                             key={time}
                             onClick={() => handleThumbnailTime(item.id, time)}
                             className="flex-1 bg-dark-300 hover:bg-primary-600 text-white px-1 py-1 rounded text-xs transition-colors"
+                            title={`Set thumbnail at ${time} seconds`}
                           >
                             {time}s
                           </button>
                         ))}
                       </div>
+                      <p className="text-xs text-gray-500">Click to set video thumbnail from that second</p>
                     </div>
                   )}
-
+                  
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleUpdate(item.id)}
@@ -468,19 +455,11 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <div className="p-4">
-                  <h3 className="text-white font-medium truncate">
-                    {item.title}
-                  </h3>
+                  <h3 className="text-white font-medium truncate">{item.title}</h3>
                   <div className="flex items-center justify-between mt-1">
-                    <p className="text-gray-400 text-sm capitalize">
-                      {item.category}
-                    </p>
+                    <p className="text-gray-400 text-sm capitalize">{item.category}</p>
                     <p className="text-gray-500 text-xs flex items-center gap-1">
-                      {item.type === "video" ? (
-                        <HiVideoCamera />
-                      ) : (
-                        <HiPhotograph />
-                      )}
+                      {item.type === 'video' ? <HiVideoCamera /> : <HiPhotograph />}
                       {item.type}
                     </p>
                   </div>
