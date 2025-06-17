@@ -23,6 +23,7 @@ const Dashboard = () => {
   const [uploadType, setUploadType] = useState('image'); // 'image' or 'video'
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [thumbnailTime, setThumbnailTime] = useState({});
 
   const categories = [
     { value: 'all', label: 'All' },
@@ -151,6 +152,10 @@ const Dashboard = () => {
       description: item.description || '',
       featured: item.featured
     });
+    // Initialize thumbnail time to 1 second for videos
+    if (item.type === 'video') {
+      setThumbnailTime({ [item.id]: 1 });
+    }
   };
 
   const handleUpdate = async (id) => {
@@ -200,6 +205,10 @@ const Dashboard = () => {
       toast.error('Failed to update thumbnail');
       console.error('Thumbnail update error:', error);
     }
+  };
+
+  const handleThumbnailSliderChange = (id, value) => {
+    setThumbnailTime(prev => ({ ...prev, [id]: value }));
   };
 
   const handleLogout = () => {
@@ -418,21 +427,31 @@ const Dashboard = () => {
                   
                   {/* Video Thumbnail Selector */}
                   {item.type === 'video' && (
-                    <div className="space-y-1">
-                      <label className="text-xs text-gray-400">Thumbnail Time (seconds)</label>
-                      <div className="flex gap-1">
-                        {[0, 1, 2, 3, 5, 10].map(time => (
-                          <button
-                            key={time}
-                            onClick={() => handleThumbnailTime(item.id, time)}
-                            className="flex-1 bg-dark-300 hover:bg-primary-600 text-white px-1 py-1 rounded text-xs transition-colors"
-                            title={`Set thumbnail at ${time} seconds`}
-                          >
-                            {time}s
-                          </button>
-                        ))}
+                    <div className="space-y-2">
+                      <label className="text-xs text-gray-400">
+                        Thumbnail Time: {thumbnailTime[item.id] || 1}s
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="range"
+                          min="0"
+                          max="10"
+                          step="0.5"
+                          value={thumbnailTime[item.id] || 1}
+                          onChange={(e) => handleThumbnailSliderChange(item.id, e.target.value)}
+                          className="flex-1 h-2 bg-dark-300 rounded-lg appearance-none cursor-pointer slider"
+                          style={{
+                            background: `linear-gradient(to right, #a855f7 0%, #a855f7 ${(thumbnailTime[item.id] || 1) * 10}%, #374151 ${(thumbnailTime[item.id] || 1) * 10}%, #374151 100%)`
+                          }}
+                        />
+                        <button
+                          onClick={() => handleThumbnailTime(item.id, thumbnailTime[item.id] || 1)}
+                          className="bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded text-xs"
+                        >
+                          Set
+                        </button>
                       </div>
-                      <p className="text-xs text-gray-500">Click to set video thumbnail from that second</p>
+                      <p className="text-xs text-gray-500">Drag slider to select thumbnail time (0-10 seconds)</p>
                     </div>
                   )}
                   

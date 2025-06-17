@@ -50,6 +50,51 @@
   background: radial-gradient(circle at center, var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to));
 }
 
+/* Custom range slider */
+input[type="range"].slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+input[type="range"].slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #a855f7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"].slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background: #9333ea;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+}
+
+input[type="range"].slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #a855f7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"].slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  background: #9333ea;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+}
+
 /* Glass effect */
 .glass {
   background: rgba(255, 255, 255, 0.05);
