@@ -7,6 +7,7 @@ import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import Loader from './components/common/Loader';
 import ScrollToTop from './components/common/ScrollToTop';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Lazy load pages for better performance
 const Home = lazy(() => import('./pages/Home'));
@@ -29,7 +30,11 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/dashboard" element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
           </Routes>
         </Suspense>
         <Footer />

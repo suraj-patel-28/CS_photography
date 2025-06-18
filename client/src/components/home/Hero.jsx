@@ -21,10 +21,10 @@ const Hero = () => {
   }, [showVideoModal]);
   
   const heroImages = [
-    'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1920&q=80',
-    'https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=80',
-    'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1920&q=80',
+    "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1920&q=80",
   ];
+
+
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -55,15 +55,15 @@ const Hero = () => {
           transition={{ duration: 0.8 }}
           className="space-y-8"
         >
-          {/* Subtitle */}
+          {/* Subtitle
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-primary-400 font-medium tracking-wider uppercase"
+            className="text-primary-600 text-xl md:text-2xl font-medium tracking-wider uppercase"
           >
             Professional Photography Studio
-          </motion.p>
+          </motion.p> */}
 
           {/* Main Title */}
           <motion.h1
@@ -73,7 +73,7 @@ const Hero = () => {
             className="text-5xl md:text-7xl font-display font-bold leading-tight"
           >
             Capturing Life's
-            <span className="block bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">
               Beautiful Moments
             </span>
           </motion.h1>
@@ -83,7 +83,7 @@ const Hero = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7 }}
-            className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto"
+            className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto"
           >
             Transform your special moments into timeless memories with our 
             professional photography and videography services
@@ -128,7 +128,7 @@ const Hero = () => {
                 <div className="text-3xl md:text-4xl font-bold text-primary-400">
                   {stat.number}
                 </div>
-                <div className="text-sm md:text-base text-gray-400 mt-1">
+                <div className="text-sm md:text-base text-gray-200 mt-1">
                   {stat.label}
                 </div>
               </div>

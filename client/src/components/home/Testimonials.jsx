@@ -34,7 +34,7 @@ const Testimonials = () => {
       image:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
       content:
-        "Professional, creative, and efficient. They made our corporate event photography seamless and delivered stunning results that we've used across all our marketing materials.",
+        "Sara kam mai hi karti hu baki log kuch nhi karte or mujhe mummy gali deti h ki mai kaam nhi karti and fir m ghar chor jaati hu 2 parle-G leke fir baap gali deke bula leta hai , iska video bhi inlogo n shoot kiya h",
       rating: 5,
       event: "Corporate Event",
     },
@@ -45,7 +45,7 @@ const Testimonials = () => {
       image:
         "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
       content:
-        "Working with this team was an absolute pleasure. They have an incredible eye for composition and lighting. The portrait session was fun, and the photos are absolutely stunning!",
+        "Bhai maza aagya khya hi photo click karte hai bhai log ekdum jhakaas bole to bindaas photographers",
       rating: 5,
       event: "Portrait Session",
     },
