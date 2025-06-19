@@ -1,15 +1,17 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const compression = require('compression');
-const rateLimit = require('express-rate-limit');
-require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const compression = require("compression");
+const rateLimit = require("express-rate-limit");
+require("dotenv").config();
 
-const { connectDB } = require('./config/db');
-const errorHandler = require('./middleware/errorHandler');
-const contactRoutes = require('./routes/contactRoutes');
-const mediaRoutes = require('./routes/mediaRoutes');
-const authRoutes = require('./routes/authRoutes');
+const { connectDB } = require("./config/db");
+const errorHandler = require("./middleware/errorHandler");
+const contactRoutes = require("./routes/contactRoutes");
+const mediaRoutes = require("./routes/mediaRoutes");
+const authRoutes = require("./routes/authRoutes");
+const testimonialRoutes = require("./routes/testimonialRoutes");
+const teamRoutes = require("./routes/teamRoutes");
 
 const app = express();
 
@@ -21,38 +23,42 @@ app.use(helmet());
 app.use(compression());
 
 // CORS configuration
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 100, // limit each IP to 100 requests per windowMs
 });
-app.use('/api/', limiter);
+app.use("/api/", limiter);
 
 // Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/media', mediaRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/contact", contactRoutes);
+app.use("/api/media", mediaRoutes);
+app.use("/api/testimonials", testimonialRoutes);
+app.use("/api/team", teamRoutes);
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is running' });
+app.get("/api/health", (req, res) => {
+  res.json({ status: "OK", message: "Server is running" });
 });
 
 // Error handling middleware
 app.use(errorHandler);
 
 // 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+app.use("*", (req, res) => {
+  res.status(404).json({ message: "Route not found" });
 });
 
 const PORT = process.env.PORT || 5000;

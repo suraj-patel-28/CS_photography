@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -9,9 +9,56 @@ import {
   HiSparkles,
   HiCheckCircle,
 } from "react-icons/hi";
+import axios from "axios";
 import "react-lazy-load-image-component/src/effects/blur.css";
 
 const About = () => {
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTeamMembers();
+  }, []);
+
+  const fetchTeamMembers = async () => {
+    try {
+      const response = await axios.get("/api/team");
+      setTeamMembers(response.data.data);
+    } catch (error) {
+      console.error("Error fetching team members:", error);
+      // Fallback to default team members
+      setTeamMembers(getDefaultTeam());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getDefaultTeam = () => [
+    {
+      id: 1,
+      name: "John Smith",
+      role: "Lead Photographer",
+      imageUrl:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80",
+      bio: "15+ years capturing moments",
+    },
+    {
+      id: 2,
+      name: "Sarah Johnson",
+      role: "Creative Director",
+      imageUrl:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80",
+      bio: "Visionary behind our aesthetic",
+    },
+    {
+      id: 3,
+      name: "Mike Chen",
+      role: "Videographer",
+      imageUrl:
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
+      bio: "Master of cinematic storytelling",
+    },
+  ];
   const values = [
     {
       icon: <HiCamera />,
@@ -38,21 +85,21 @@ const About = () => {
 
   const team = [
     {
-      name: "Ajay",
+      name: "John Smith",
       role: "Lead Photographer",
       image:
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80",
       bio: "15+ years capturing moments",
     },
     {
-      name: "Raj",
+      name: "Sarah Johnson",
       role: "Creative Director",
       image:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80",
       bio: "Visionary behind our aesthetic",
     },
     {
-      name: "Hari",
+      name: "Mike Chen",
       role: "Videographer",
       image:
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
@@ -105,29 +152,21 @@ const About = () => {
               </h2>
               <div className="space-y-4 text-gray-300">
                 <p>
-                  Founded in 2018 by{" "}
-                  <span className="text-primary-400 font-semibold">
-                    Ajay Patel
-                  </span>
-                  , CSphotography was born from a simple yet powerful belief:
+                  Founded in 2014, CSphotography emerged from a simple belief:
                   every moment deserves to be captured with artistry and
-                  authenticity. What began as a small studio has since evolved
-                  into a full-service photography and videography company.
+                  authenticity. What started as a small studio has grown into a
+                  full-service photography and videography company.
                 </p>
                 <p>
-                  Over the years, we’ve had the honor of documenting hundreds of
-                  weddings, corporate events, and personal milestones. Each
-                  project has reaffirmed our core philosophy — behind every
-                  photograph lies a unique story waiting to be told.
+                  Over the years, we've had the privilege of documenting
+                  hundreds of weddings, corporate events, and personal
+                  milestones. Each project has taught us that behind every
+                  photograph is a unique story waiting to be told.
                 </p>
                 <p>
-                  Today, under the leadership of{" "}
-                  <span className="text-primary-400 font-semibold">
-                    Ajay Patel
-                  </span>
-                  , our passionate team blends technical expertise with creative
-                  vision to craft images and videos that not only capture
-                  moments but also evoke deep emotions and preserve memories for
+                  Today, our team combines technical expertise with creative
+                  vision to deliver images and videos that not only capture
+                  moments but evoke emotions and preserve memories for
                   generations to come.
                 </p>
               </div>
@@ -225,33 +264,55 @@ const About = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {team.map((member, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="group"
-              >
-                <div className="relative overflow-hidden rounded-2xl mb-4">
-                  <LazyLoadImage
-                    src={member.image}
-                    alt={member.name}
-                    effect="blur"
-                    className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gray-800 h-80 rounded-2xl mb-4"></div>
+                  <div className="h-6 bg-gray-800 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-800 rounded w-2/3"></div>
                 </div>
-                <h3 className="text-xl font-medium text-white mb-1">
-                  {member.name}
-                </h3>
-                <p className="text-primary-400 mb-2">{member.role}</p>
-                <p className="text-gray-400 text-sm">{member.bio}</p>
-              </motion.div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {teamMembers.map((member, index) => (
+                <motion.div
+                  key={member.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="group"
+                >
+                  <div className="relative overflow-hidden rounded-2xl mb-4">
+                    {member.imageUrl ? (
+                      <LazyLoadImage
+                        src={member.imageUrl}
+                        alt={member.name}
+                        effect="blur"
+                        className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-80 bg-gradient-to-br from-primary-400 to-purple-400 flex items-center justify-center">
+                        <span className="text-white text-6xl font-display">
+                          {member.name[0]}
+                        </span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                  <h3 className="text-xl font-medium text-white mb-1">
+                    {member.name}
+                  </h3>
+                  <p className="text-primary-400 mb-2">{member.role}</p>
+                  {member.bio && (
+                    <p className="text-gray-400 text-sm">{member.bio}</p>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
