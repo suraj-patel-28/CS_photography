@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -16,24 +16,7 @@ const About = () => {
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchTeamMembers();
-  }, []);
-
-  const fetchTeamMembers = async () => {
-    try {
-      const response = await axios.get("/api/team");
-      setTeamMembers(response.data.data);
-    } catch (error) {
-      console.error("Error fetching team members:", error);
-      // Fallback to default team members
-      setTeamMembers(getDefaultTeam());
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getDefaultTeam = () => [
+  const getDefaultTeam = useCallback(() => [
     {
       id: 1,
       name: "John Smith",
@@ -58,7 +41,25 @@ const About = () => {
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
       bio: "Master of cinematic storytelling",
     },
-  ];
+  ], []);
+
+  const fetchTeamMembers = useCallback(async () => {
+    try {
+      const response = await axios.get("/api/team");
+      setTeamMembers(response.data.data);
+    } catch (error) {
+      console.error("Error fetching team members:", error);
+      // Fallback to default team members
+      setTeamMembers(getDefaultTeam());
+    } finally {
+      setLoading(false);
+    }
+  }, [getDefaultTeam]);
+
+  useEffect(() => {
+    fetchTeamMembers();
+  }, [fetchTeamMembers]);
+
   const values = [
     {
       icon: <HiCamera />,
@@ -83,29 +84,7 @@ const About = () => {
     },
   ];
 
-  const team = [
-    {
-      name: "John Smith",
-      role: "Lead Photographer",
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80",
-      bio: "15+ years capturing moments",
-    },
-    {
-      name: "Sarah Johnson",
-      role: "Creative Director",
-      image:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80",
-      bio: "Visionary behind our aesthetic",
-    },
-    {
-      name: "Mike Chen",
-      role: "Videographer",
-      image:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
-      bio: "Master of cinematic storytelling",
-    },
-  ];
+  // Removed the unused 'team' variable - it was duplicating the default team data
 
   return (
     <main className="pt-24 pb-16">
@@ -113,7 +92,7 @@ const About = () => {
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <LazyLoadImage
-            src="https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1920&q=80"
+            src="https://images.unsplash.com/photo-1614108831136-a6bba175a08e?w=800&q=80"
             alt="About hero"
             effect="blur"
             className="w-full h-full object-cover opacity-20"

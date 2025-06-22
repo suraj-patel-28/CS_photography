@@ -174,7 +174,7 @@ const emailTemplates = {
             </p>
             <p style="color: #999; font-size: 12px; margin: 5px 0;">
               mandir hasaud , raipur chhattisgarh <br>
-              Phone: +1 (234) 567-890 | Email: hello@CSphotography.com
+              Phone: 9575548611 | Email: amanpatel3378@gmail.com
             </p>
           </div>
         </div>

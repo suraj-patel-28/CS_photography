@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { HiStar } from "react-icons/hi";
@@ -18,24 +18,7 @@ const Testimonials = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchTestimonials();
-  }, []);
-
-  const fetchTestimonials = async () => {
-    try {
-      const response = await axios.get("/api/testimonials");
-      setTestimonials(response.data.data);
-    } catch (error) {
-      console.error("Error fetching testimonials:", error);
-      // Fallback to default testimonials if API fails
-      setTestimonials(getDefaultTestimonials());
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getDefaultTestimonials = () => [
+  const getDefaultTestimonials = useCallback(() => [
     {
       id: 1,
       name: "Sarah Johnson",
@@ -58,7 +41,24 @@ const Testimonials = () => {
       rating: 5,
       event: "Anniversary Shoot",
     },
-  ];
+  ], []);
+
+  const fetchTestimonials = useCallback(async () => {
+    try {
+      const response = await axios.get("/api/testimonials");
+      setTestimonials(response.data.data);
+    } catch (error) {
+      console.error("Error fetching testimonials:", error);
+      // Fallback to default testimonials if API fails
+      setTestimonials(getDefaultTestimonials());
+    } finally {
+      setLoading(false);
+    }
+  }, [getDefaultTestimonials]);
+
+  useEffect(() => {
+    fetchTestimonials();
+  }, [fetchTestimonials]);
 
   if (loading) {
     return (

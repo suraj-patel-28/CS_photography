@@ -8,32 +8,32 @@ import {
   HiClock,
   HiChat,
 } from "react-icons/hi";
-import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 
 const Contact = () => {
   const contactInfo = [
     {
       icon: <HiPhone className="w-6 h-6" />,
       title: "Phone",
-      details: "+1 (234) 567-890",
-      action: "tel:+1234567890",
+      details: "9575548611",
+      action: "tel:9575548611",
     },
     {
       icon: <HiMail className="w-6 h-6" />,
       title: "Email",
-      details: "hello@CSphotography.com",
-      action: "mailto:hello@CSphotography.com",
+      details: "amanpatel3378@gmail.com",
+      action: "mailto:amanpatel3378@gmail.com",
     },
     {
       icon: <HiLocationMarker className="w-6 h-6" />,
-      title: "Studio",
-      details: "123 Creative Studio, New York, NY 10001",
+      title: "Office",
+      details: "Mandir Hasuad Raipur , Chhattisgarh",
       action: "#",
     },
     {
       icon: <HiClock className="w-6 h-6" />,
       title: "Working Hours",
-      details: "Mon-Fri: 9AM-6PM, Sat: 10AM-4PM",
+      details: "Mon-Fri: 9AM-7PM, Sat: 10AM-5PM",
       action: "#",
     },
   ];
@@ -41,7 +41,6 @@ const Contact = () => {
   const socialLinks = [
     { icon: <FaFacebookF />, url: "#", label: "Facebook" },
     { icon: <FaInstagram />, url: "#", label: "Instagram" },
-    { icon: <FaTwitter />, url: "#", label: "Twitter" },
     { icon: <FaYoutube />, url: "#", label: "YouTube" },
   ];
 
