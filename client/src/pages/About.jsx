@@ -13,6 +13,7 @@ import axios from "axios";
 import "react-lazy-load-image-component/src/effects/blur.css";
 
 const About = () => {
+  // Initialize as empty array to prevent undefined errors
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,11 +46,23 @@ const About = () => {
 
   const fetchTeamMembers = useCallback(async () => {
     try {
-      const response = await axios.get("/api/team");
-      setTeamMembers(response.data.data);
+      setLoading(true);
+      // Use environment variable for API URL
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://csphotography-backend.onrender.com';
+      const response = await axios.get(`${API_BASE_URL}/api/team`);
+      
+      // Safely access the response data
+      const teamData = response?.data?.data || response?.data || [];
+      
+      if (Array.isArray(teamData) && teamData.length > 0) {
+        setTeamMembers(teamData);
+      } else {
+        // Use default team if no data from API
+        setTeamMembers(getDefaultTeam());
+      }
     } catch (error) {
       console.error("Error fetching team members:", error);
-      // Fallback to default team members
+      // Always fallback to default team on error
       setTeamMembers(getDefaultTeam());
     } finally {
       setLoading(false);
@@ -83,8 +96,6 @@ const About = () => {
       description: "Every detail matters in creating the perfect photograph.",
     },
   ];
-
-  // Removed the unused 'team' variable - it was duplicating the default team data
 
   return (
     <main className="pt-24 pb-16">
@@ -226,7 +237,7 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team Section */}
+      {/* Team Section - FIXED: Added safe array check */}
       <section className="py-20 bg-dark-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -255,9 +266,9 @@ const About = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {teamMembers.map((member, index) => (
+              {Array.isArray(teamMembers) && teamMembers.map((member, index) => (
                 <motion.div
-                  key={member.id}
+                  key={member?.id || index}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -265,31 +276,38 @@ const About = () => {
                   className="group"
                 >
                   <div className="relative overflow-hidden rounded-2xl mb-4">
-                    {member.imageUrl ? (
+                    {member?.imageUrl ? (
                       <LazyLoadImage
                         src={member.imageUrl}
-                        alt={member.name}
+                        alt={member?.name || 'Team Member'}
                         effect="blur"
                         className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     ) : (
                       <div className="w-full h-80 bg-gradient-to-br from-primary-400 to-purple-400 flex items-center justify-center">
                         <span className="text-white text-6xl font-display">
-                          {member.name[0]}
+                          {member?.name ? member.name[0] : 'T'}
                         </span>
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                   <h3 className="text-xl font-medium text-white mb-1">
-                    {member.name}
+                    {member?.name || 'Team Member'}
                   </h3>
-                  <p className="text-primary-400 mb-2">{member.role}</p>
-                  {member.bio && (
+                  <p className="text-primary-400 mb-2">{member?.role || 'Professional'}</p>
+                  {member?.bio && (
                     <p className="text-gray-400 text-sm">{member.bio}</p>
                   )}
                 </motion.div>
               ))}
+            </div>
+          )}
+
+          {/* Show message if no team members */}
+          {!loading && (!Array.isArray(teamMembers) || teamMembers.length === 0) && (
+            <div className="text-center py-12">
+              <p className="text-gray-400">Loading team information...</p>
             </div>
           )}
         </div>
