@@ -13,9 +13,9 @@ import axios from "axios";
 import "react-lazy-load-image-component/src/effects/blur.css";
 
 const About = () => {
-  // Initialize as empty array to prevent undefined errors
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const getDefaultTeam = useCallback(() => [
     {
@@ -47,22 +47,63 @@ const About = () => {
   const fetchTeamMembers = useCallback(async () => {
     try {
       setLoading(true);
-      // Use environment variable for API URL
+      setError(null);
+      
       const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://csphotography-backend.onrender.com';
-      const response = await axios.get(`${API_BASE_URL}/api/team`);
       
-      // Safely access the response data
-      const teamData = response?.data?.data || response?.data || [];
+      console.log('Fetching team members from:', `${API_BASE_URL}/api/team`);
       
-      if (Array.isArray(teamData) && teamData.length > 0) {
-        setTeamMembers(teamData);
+      const response = await axios.get(`${API_BASE_URL}/api/team`, {
+        timeout: 10000, // 10 second timeout
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      console.log('API Response:', response.data);
+      
+      // More flexible response handling
+      let teamData = [];
+      
+      if (response.data) {
+        // Try different possible response structures
+        if (Array.isArray(response.data)) {
+          teamData = response.data;
+        } else if (response.data.data && Array.isArray(response.data.data)) {
+          teamData = response.data.data;
+        } else if (response.data.team && Array.isArray(response.data.team)) {
+          teamData = response.data.team;
+        } else if (response.data.members && Array.isArray(response.data.members)) {
+          teamData = response.data.members;
+        }
+      }
+      
+      console.log('Processed team data:', teamData);
+      
+      if (teamData.length > 0) {
+        // Validate that each team member has required fields
+        const validTeamData = teamData.filter(member => 
+          member && (member.name || member.title) // At least name or title should exist
+        );
+        
+        if (validTeamData.length > 0) {
+          setTeamMembers(validTeamData);
+          console.log('Using API team data');
+        } else {
+          console.log('API data exists but no valid team members found, using default');
+          setTeamMembers(getDefaultTeam());
+        }
       } else {
-        // Use default team if no data from API
+        console.log('No team data in API response, using default');
         setTeamMembers(getDefaultTeam());
       }
+      
     } catch (error) {
       console.error("Error fetching team members:", error);
-      // Always fallback to default team on error
+      setError(error.message);
+      
+      // Only use default team if there's an actual error
+      console.log('API call failed, using default team');
       setTeamMembers(getDefaultTeam());
     } finally {
       setLoading(false);
@@ -237,7 +278,7 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team Section - FIXED: Added safe array check */}
+      {/* Team Section */}
       <section className="py-20 bg-dark-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -252,6 +293,17 @@ const About = () => {
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
               The creative minds behind every stunning photograph and video
             </p>
+            
+            {/* Debug info - remove in production */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mt-4 p-4 bg-gray-800 rounded-lg text-left text-sm">
+                <p className="text-yellow-400">Debug Info:</p>
+                <p className="text-gray-300">Team members count: {teamMembers.length}</p>
+                <p className="text-gray-300">Loading: {loading ? 'Yes' : 'No'}</p>
+                {error && <p className="text-red-400">Error: {error}</p>}
+                <p className="text-gray-300">API URL: {process.env.REACT_APP_API_URL || 'https://csphotography-backend.onrender.com'}</p>
+              </div>
+            )}
           </motion.div>
 
           {loading ? (
@@ -266,7 +318,7 @@ const About = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {Array.isArray(teamMembers) && teamMembers.map((member, index) => (
+              {teamMembers.map((member, index) => (
                 <motion.div
                   key={member?.id || index}
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -276,28 +328,32 @@ const About = () => {
                   className="group"
                 >
                   <div className="relative overflow-hidden rounded-2xl mb-4">
-                    {member?.imageUrl ? (
+                    {member?.imageUrl || member?.image ? (
                       <LazyLoadImage
-                        src={member.imageUrl}
-                        alt={member?.name || 'Team Member'}
+                        src={member.imageUrl || member.image}
+                        alt={member?.name || member?.title || 'Team Member'}
                         effect="blur"
                         className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     ) : (
                       <div className="w-full h-80 bg-gradient-to-br from-primary-400 to-purple-400 flex items-center justify-center">
                         <span className="text-white text-6xl font-display">
-                          {member?.name ? member.name[0] : 'T'}
+                          {(member?.name || member?.title || 'T')[0].toUpperCase()}
                         </span>
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                   <h3 className="text-xl font-medium text-white mb-1">
-                    {member?.name || 'Team Member'}
+                    {member?.name || member?.title || 'Team Member'}
                   </h3>
-                  <p className="text-primary-400 mb-2">{member?.role || 'Professional'}</p>
-                  {member?.bio && (
-                    <p className="text-gray-400 text-sm">{member.bio}</p>
+                  <p className="text-primary-400 mb-2">
+                    {member?.role || member?.position || 'Professional'}
+                  </p>
+                  {(member?.bio || member?.description) && (
+                    <p className="text-gray-400 text-sm">
+                      {member.bio || member.description}
+                    </p>
                   )}
                 </motion.div>
               ))}
@@ -305,9 +361,12 @@ const About = () => {
           )}
 
           {/* Show message if no team members */}
-          {!loading && (!Array.isArray(teamMembers) || teamMembers.length === 0) && (
+          {!loading && teamMembers.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-400">Loading team information...</p>
+              <p className="text-gray-400">No team members found.</p>
+              {error && (
+                <p className="text-red-400 mt-2">Error: {error}</p>
+              )}
             </div>
           )}
         </div>
