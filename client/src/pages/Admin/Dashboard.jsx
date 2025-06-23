@@ -73,6 +73,11 @@ const Dashboard = () => {
     }
   };
 
+  useEffect(() => {
+  fetchData();
+  }, [activeTab]);
+
+
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
     setSelectedFiles(files);
