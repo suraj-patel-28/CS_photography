@@ -20,27 +20,11 @@ const About = () => {
   const getDefaultTeam = useCallback(() => [
     {
       id: 1,
-      name: "John Smith",
-      role: "Lead Photographer",
+      name: "Robo",
+      role: "Photographer",
       imageUrl:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80",
-      bio: "15+ years capturing moments",
-    },
-    {
-      id: 2,
-      name: "Sarah Johnson",
-      role: "Creative Director",
-      imageUrl:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80",
-      bio: "Visionary behind our aesthetic",
-    },
-    {
-      id: 3,
-      name: "Mike Chen",
-      role: "Videographer",
-      imageUrl:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
-      bio: "Master of cinematic storytelling",
+        "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&q=80",
+      bio: "AI-powered photography assistant",
     },
   ], []);
 
@@ -317,7 +301,7 @@ const About = () => {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 gap-8 max-w-md mx-auto">
               {teamMembers.map((member, index) => (
                 <motion.div
                   key={member?.id || index}
@@ -363,9 +347,24 @@ const About = () => {
           {/* Show message if no team members */}
           {!loading && teamMembers.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-400">No team members found.</p>
+              <div className="max-w-md mx-auto">
+                <div className="relative overflow-hidden rounded-2xl mb-4">
+                  <img
+                    src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&q=80"
+                    alt="Robo - AI Photographer"
+                    className="w-full h-80 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <h3 className="text-xl font-medium mb-1">Robo</h3>
+                    <p className="text-primary-400 mb-2">Photographer</p>
+                    <p className="text-gray-300 text-sm">AI-powered photography assistant</p>
+                  </div>
+                </div>
+              </div>
+              <p className="text-gray-400 mt-4">Our AI photographer is ready to assist you!</p>
               {error && (
-                <p className="text-red-400 mt-2">Error: {error}</p>
+                <p className="text-red-400 mt-2 text-sm">Unable to load team data: {error}</p>
               )}
             </div>
           )}
