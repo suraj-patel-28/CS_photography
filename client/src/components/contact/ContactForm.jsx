@@ -44,7 +44,13 @@ const ContactForm = () => {
     setLoading(true);
 
     try {
-      await axios.post("/api/contact", formData);
+      // Use environment variable for API URL - FIXED
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://csphotography-backend.onrender.com';
+      console.log('🚀 Submitting contact form to:', `${API_BASE_URL}/api/contact`);
+      
+      const response = await axios.post(`${API_BASE_URL}/api/contact`, formData);
+      console.log('✅ Contact form response:', response.data);
+      
       toast.success("Thank you for your message! We'll get back to you soon.");
       setFormData({
         name: "",
@@ -55,8 +61,19 @@ const ContactForm = () => {
         message: "",
       });
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-      console.error("Error submitting form:", error);
+      console.error("❌ Error submitting form:", error);
+      console.error("❌ Error response:", error.response?.data);
+      
+      // More specific error messages
+      if (error.response?.status === 400) {
+        toast.error("Please check your form data and try again.");
+      } else if (error.response?.status === 500) {
+        toast.error("Server error. Please try again later.");
+      } else if (error.code === 'ERR_NETWORK') {
+        toast.error("Network error. Please check your connection.");
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
