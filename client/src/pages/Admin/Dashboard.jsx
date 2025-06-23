@@ -18,6 +18,7 @@ import {
 } from "react-icons/hi";
 
 const Dashboard = () => {
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://csphotography-backend.onrender.com';
   const [activeTab, setActiveTab] = useState("media");
   const [media, setMedia] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
@@ -46,27 +47,26 @@ const Dashboard = () => {
     { id: "team", label: "Team Members", icon: <HiUserGroup /> },
   ];
 
-  useEffect(() => {
-    fetchData();
-  }, [activeTab]);
-
-  const fetchData = async () => {
+   const fetchData = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("adminToken");
       const headers = { Authorization: `Bearer ${token}` };
 
+      console.log(`🚀 Fetching ${activeTab} from:`, `${API_BASE_URL}/api/${activeTab}`);
+
       if (activeTab === "media") {
-        const response = await axios.get("/api/media", { headers });
+        const response = await axios.get(`${API_BASE_URL}/api/media`, { headers });
         setMedia(response.data.data);
       } else if (activeTab === "testimonials") {
-        const response = await axios.get("/api/testimonials", { headers });
+        const response = await axios.get(`${API_BASE_URL}/api/testimonials`, { headers });
         setTestimonials(response.data.data);
       } else if (activeTab === "team") {
-        const response = await axios.get("/api/team", { headers });
+        const response = await axios.get(`${API_BASE_URL}/api/team`, { headers });
         setTeamMembers(response.data.data);
       }
     } catch (error) {
+      console.error(`❌ Error fetching ${activeTab}:`, error);
       toast.error(`Failed to fetch ${activeTab}`);
     } finally {
       setLoading(false);
@@ -105,7 +105,9 @@ const Dashboard = () => {
           selectedCategory === "all" ? "other" : selectedCategory
         );
 
-        await axios.post(`/api/media/${uploadType}`, formData, {
+        console.log(`🚀 Uploading ${uploadType} to:`, `${API_BASE_URL}/api/media/${uploadType}`);
+
+        await axios.post(`${API_BASE_URL}/api/media/${uploadType}`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
@@ -121,7 +123,7 @@ const Dashboard = () => {
           selectedCategory === "all" ? "other" : selectedCategory
         );
 
-        await axios.post("/api/media/bulk", formData, {
+        await axios.post(`${API_BASE_URL}/api/media/bulk`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
@@ -166,7 +168,7 @@ const Dashboard = () => {
 
     try {
       if (editingId) {
-        await axios.put(`/api/testimonials/${editingId}`, formData, {
+        await axios.put(`${API_BASE_URL}/api/testimonials/${editingId}`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
@@ -174,7 +176,7 @@ const Dashboard = () => {
         });
         toast.success("Testimonial updated!");
       } else {
-        await axios.post("/api/testimonials", formData, {
+        await axios.post(`${API_BASE_URL}/api/testimonials`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
@@ -188,9 +190,11 @@ const Dashboard = () => {
       setSelectedFiles([]);
       fetchData();
     } catch (error) {
+      console.error("❌ Error saving testimonial:", error);
       toast.error("Failed to save testimonial");
     }
   };
+
 
   const handleTeamSubmit = async () => {
     const formData = new FormData();
@@ -212,7 +216,7 @@ const Dashboard = () => {
 
     try {
       if (editingId) {
-        await axios.put(`/api/team/${editingId}`, formData, {
+        await axios.put(`${API_BASE_URL}/api/team/${editingId}`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
@@ -220,7 +224,7 @@ const Dashboard = () => {
         });
         toast.success("Team member updated!");
       } else {
-        await axios.post("/api/team", formData, {
+        await axios.post(`${API_BASE_URL}/api/team`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
@@ -234,9 +238,12 @@ const Dashboard = () => {
       setSelectedFiles([]);
       fetchData();
     } catch (error) {
+      console.error("❌ Error saving team member:", error);
       toast.error("Failed to save team member");
     }
   };
+
+
 
   const handleDelete = async (id, type) => {
     if (!window.confirm(`Are you sure you want to delete this ${type}?`)) {
@@ -245,13 +252,14 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.delete(`/api/${type}/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/${type}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       toast.success("Deleted successfully");
       fetchData();
     } catch (error) {
+      console.error("❌ Error deleting:", error);
       toast.error("Failed to delete");
     }
   };
@@ -294,7 +302,7 @@ const Dashboard = () => {
   const handleUpdate = async (id) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.put(`/api/media/${id}`, editForm, {
+      await axios.put(`${API_BASE_URL}/api/media/${id}`, editForm, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -302,6 +310,7 @@ const Dashboard = () => {
       setEditingId(null);
       fetchData();
     } catch (error) {
+      console.error("❌ Error updating:", error);
       toast.error("Failed to update");
     }
   };
@@ -319,7 +328,7 @@ const Dashboard = () => {
         const newThumbnailUrl = `https://res.cloudinary.com/${cloudName}/video/upload/so_${time},w_400,h_400,c_fill,q_auto/${videoId}.jpg`;
 
         await axios.put(
-          `/api/media/${id}`,
+          `${API_BASE_URL}/api/media/${id}`,
           { thumbnailUrl: newThumbnailUrl },
           { headers: { Authorization: `Bearer ${token}` } }
         );

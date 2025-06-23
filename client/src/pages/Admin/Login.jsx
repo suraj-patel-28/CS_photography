@@ -6,6 +6,9 @@ import axios from 'axios';
 import { HiLockClosed, HiMail, HiEye, HiEyeOff } from 'react-icons/hi';
 
 const AdminLogin = () => {
+  // Add API base URL configuration
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://csphotography-backend.onrender.com';
+
   const [credentials, setCredentials] = useState({
     email: '',
     password: ''
@@ -25,11 +28,16 @@ const AdminLogin = () => {
 
   const verifyToken = async (token) => {
     try {
-      await axios.get('/api/auth/verify', {
+      console.log('🚀 Verifying token at:', `${API_BASE_URL}/api/auth/verify`);
+      
+      await axios.get(`${API_BASE_URL}/api/auth/verify`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      
+      console.log('✅ Token verified, redirecting to dashboard');
       navigate('/admin/dashboard');
     } catch (error) {
+      console.error('❌ Token verification failed:', error);
       localStorage.removeItem('adminToken');
     }
   };
@@ -51,7 +59,11 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/auth/login', credentials);
+      console.log('🚀 Attempting login at:', `${API_BASE_URL}/api/auth/login`);
+      
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, credentials);
+      
+      console.log('✅ Login successful:', response.data);
       
       localStorage.setItem('adminToken', response.data.token);
       
@@ -61,6 +73,9 @@ const AdminLogin = () => {
       toast.success('Login successful!');
       navigate('/admin/dashboard');
     } catch (error) {
+      console.error('❌ Login failed:', error);
+      console.error('❌ Error response:', error.response?.data);
+      
       const message = error.response?.data?.message || 'Login failed. Please try again.';
       toast.error(message);
       
