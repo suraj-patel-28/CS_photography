@@ -15,6 +15,7 @@ const Testimonials = () => {
     threshold: 0.1,
   });
 
+  // Initialize as empty array to prevent undefined errors
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,11 +46,23 @@ const Testimonials = () => {
 
   const fetchTestimonials = useCallback(async () => {
     try {
-      const response = await axios.get("/api/testimonials");
-      setTestimonials(response.data.data);
+      setLoading(true);
+      // Use environment variable for API URL
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://csphotography-backend.onrender.com';
+      const response = await axios.get(`${API_BASE_URL}/api/testimonials`);
+      
+      // Safely access the response data
+      const testimonialData = response?.data?.data || response?.data || [];
+      
+      if (Array.isArray(testimonialData) && testimonialData.length > 0) {
+        setTestimonials(testimonialData);
+      } else {
+        // Use default testimonials if no data from API
+        setTestimonials(getDefaultTestimonials());
+      }
     } catch (error) {
       console.error("Error fetching testimonials:", error);
-      // Fallback to default testimonials if API fails
+      // Always fallback to default testimonials on error
       setTestimonials(getDefaultTestimonials());
     } finally {
       setLoading(false);
@@ -94,8 +107,8 @@ const Testimonials = () => {
           </p>
         </motion.div>
 
-        {/* Testimonials Slider */}
-        {testimonials.length > 0 ? (
+        {/* Testimonials Slider - FIXED: Added safe check */}
+        {Array.isArray(testimonials) && testimonials.length > 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={inView ? { opacity: 1, scale: 1 } : {}}
@@ -133,7 +146,7 @@ const Testimonials = () => {
                   <div className="bg-dark-200/50 backdrop-blur-sm rounded-2xl p-8 h-full border border-gray-800 hover:border-gray-700 transition-colors">
                     {/* Rating */}
                     <div className="flex gap-1 mb-4">
-                      {[...Array(testimonial.rating)].map((_, i) => (
+                      {[...Array(testimonial.rating || 5)].map((_, i) => (
                         <HiStar
                           key={i}
                           className="w-5 h-5 text-yellow-500 fill-current"
@@ -157,7 +170,7 @@ const Testimonials = () => {
                       ) : (
                         <div className="w-12 h-12 rounded-full bg-gradient-to-r from-primary-400 to-purple-400 flex items-center justify-center">
                           <span className="text-white font-medium">
-                            {testimonial.name[0]}
+                            {testimonial.name ? testimonial.name[0] : 'U'}
                           </span>
                         </div>
                       )}
@@ -182,7 +195,7 @@ const Testimonials = () => {
           </motion.div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-400">No testimonials yet.</p>
+            <p className="text-gray-400">Loading testimonials...</p>
           </div>
         )}
 
