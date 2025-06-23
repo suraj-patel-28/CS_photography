@@ -44,30 +44,29 @@ const Testimonials = () => {
     },
   ], []);
 
-  const fetchTestimonials = useCallback(async () => {
-    try {
-      setLoading(true);
-      // Use environment variable for API URL
-      const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://csphotography-backend.onrender.com';
-      const response = await axios.get(`${API_BASE_URL}/api/testimonials`);
-      
-      // Safely access the response data
-      const testimonialData = response?.data?.data || response?.data || [];
-      
-      if (Array.isArray(testimonialData) && testimonialData.length > 0) {
-        setTestimonials(testimonialData);
-      } else {
-        // Use default testimonials if no data from API
-        setTestimonials(getDefaultTestimonials());
-      }
-    } catch (error) {
-      console.error("Error fetching testimonials:", error);
-      // Always fallback to default testimonials on error
+const fetchTestimonials = useCallback(async () => {
+  try {
+    setLoading(true);
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://csphotography-backend.onrender.com';
+    console.log('🚀 Fetching testimonials from:', `${API_BASE_URL}/api/testimonials`);
+    
+    const response = await axios.get(`${API_BASE_URL}/api/testimonials`);
+    console.log('✅ Testimonials response:', response.data);
+    
+    if (response.data && response.data.data && Array.isArray(response.data.data)) {
+      setTestimonials(response.data.data);
+    } else {
+      console.log('⚠️ Unexpected testimonials data structure:', response.data);
       setTestimonials(getDefaultTestimonials());
-    } finally {
-      setLoading(false);
     }
-  }, [getDefaultTestimonials]);
+  } catch (error) {
+    console.error("❌ Error fetching testimonials:", error);
+    console.error("❌ Error details:", error.response?.data);
+    setTestimonials(getDefaultTestimonials());
+  } finally {
+    setLoading(false);
+  }
+}, [getDefaultTestimonials]);
 
   useEffect(() => {
     fetchTestimonials();
